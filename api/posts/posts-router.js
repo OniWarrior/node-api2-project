@@ -1,10 +1,7 @@
 // implement your posts router here
 
-const Post = require('./posts-model')
+const Post = require('./posts-model');
 const express = require('express')
-const server = require('../server')
-
-
 const router = express.Router()
 
 router.get('/api/posts',(req,res)=>{
@@ -37,35 +34,23 @@ router.get('/api/posts/:id', (req,res)=>{
 })
 
 router.get('/api/posts/:id/comments', (req,res)=>{
-    Post.findById(req.params.id)
+    Post.findPostComments(req.params.id)
      .then(post =>{
-         if(post)
-         {
-             res.status(200).json(post)
-             Post.findPostComments(req.params.id)
-             .then(comment=>{
-                 if(comment)
-                 {
-                     res.status(200).json(comment)
-                 }
-                 else
-                 {
-                    res.status(404).json({message:'The comments with the specified ID does not exist'})
-                 }
-             })
-             .catch(err=>{
-                console.log(err)
-                res.status(500).json({message:'The comments information could not be retrieved'})
-             })
-         }
-         else
-         {
-             res.status(404).json({message:'The post with the specified ID does not exist'})
-         }
+        if(!post)
+        {
+            res.status(404).json({message:'The post with the specified ID does not exist'})
+            
+        }
+        else
+        {
+            res.status(200).json(post)
+        }
+
+       
      })
       .catch(err=>{
           console.log(err)
-          res.status(500).json({message:'The post information could not be retrieved'})
+          res.status(500).json({message:'The comments information could not be retrieved'})
       })
 })
 
@@ -78,8 +63,8 @@ router.post('/api/posts',(req,res)=>{
     else
     {
         Post.insert(newPost)
-        .then(post=>{
-            res.status(201).json(post)
+        .then(id=>{
+            res.status(201).json(id)
         })
         .catch(err=>{
             res.status(500).json({message:'There was an error while saving the post to the database'})
@@ -112,7 +97,7 @@ router.put('/api/posts/:id', async(req,res)=>{
     }
 })
 
-server.delete('/api/posts/:id', async (req,res)=>{
+router.delete('/api/posts/:id', async (req,res)=>{
     try{        
         const {id} = req.params
         const deletedPost = await Post.remove(id)
@@ -131,4 +116,4 @@ server.delete('/api/posts/:id', async (req,res)=>{
 
 })
 
-module.exports = server
+module.exports = router

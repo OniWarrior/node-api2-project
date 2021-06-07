@@ -5,8 +5,9 @@ const express = require('express')
 const postsRouter = require('./posts/posts-router')
 const server = express()
 
+
 server.use(express.json())
-server.use('/api/posts',postsRouter)
+server.use(postsRouter)
 
 server.get('/',(req,res)=>{
     res.send(`
@@ -15,5 +16,7 @@ server.get('/',(req,res)=>{
     `  
     )
 })
+
+
 
 module.exports = server;
